@@ -1,0 +1,58 @@
+﻿@model List<Sl1_Front.Models.Pedido>
+@{
+    ViewBag.Title = "Ventakrispy";
+}
+
+<h2>Ventakrispy</h2>
+
+<div class="row">
+    @ViewBag.Message
+    <div class="col-md-12 col-lg-12 col-sm-12">
+        <table id="tabla-pedidos" class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Dona</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pedido in Model)
+                {
+                    <tr>
+                        <td>@pedido.Nombre</td>
+                        <td>@pedido.Direccion</td>
+                        <td>Chocolate</td>
+                        <td>@pedido.Cantidad</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        $(() => {
+            initTablePedidos();
+        });
+        let initTablePedidos = () => {
+            tablaUsuarios = $('#tabla-pedidos').DataTable({
+                responsive: false,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                language: {
+                    "paginate": {
+                        "previous": "Anterior",
+                        "next": "Siguiente"
+                    },
+                    "information": false,
+                    "info": "",
+                    "zeroRecords": "No hay registros que mostrar",
+                }
+            });
+        }
+
+    </script>
+}

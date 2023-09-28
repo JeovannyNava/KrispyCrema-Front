@@ -1,0 +1,173 @@
+﻿@model  Sl1_Front.Models.Pedido
+@{
+    ViewBag.Title = "Pedido";
+    SelectList donas = ViewBag.Donas;
+}
+
+<h2>Pedido</h2>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row" id="personal">
+                        <form id="form-pedido">
+                            <input type="hidden" class="form-control" name="IdPaciente" id="IdPaciente" value="@Model.IdPedido">
+                            <div class="col-md-12">
+                                
+                                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control", placeholder = "Escriba su nombre", required = true } })
+                                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-12">
+                                @Html.EditorFor(model => model.Direccion, new { htmlAttributes = new { @class = "form-control", placeholder = "Escriba su Direccion", required = true } })
+                                @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-12">
+                                @Html.DropDownList("IdDona", null, htmlAttributes: new { @class = "form-control", required = "required" })
+                                @Html.ValidationMessageFor(model => model.Dona.Id, "", new { @class = "text-danger" })
+                            </div>
+                            <div class="col-md-12">
+                                @Html.EditorFor(model => model.Cantidad, new { htmlAttributes = new { @class = "form-control", placeholder = "Escriba su nombre", required = true, min=1 } })
+                                @Html.ValidationMessageFor(model => model.Cantidad, "", new { @class = "text-danger" })
+                            </div>
+                        </form>
+
+                    </div>
+                    <div class="form-group" style="padding-top: 3%">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input onclick="crearPedido()" type="button" id="create-pedido" value="Crear Pedido" class="btn btn-primary" style="float:right" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section Scripts{
+    <script>
+         $(() => {
+            startMultiple();
+            validarFormPedido();
+        });
+
+        var crearPedido = () => {
+            debugger
+            if (!$("#form-pedido").valid()) {
+
+                return false;
+            }
+
+            swal({
+
+                title: "¿Estás seguro de hacer tu pedido?",
+                text: "",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((confirmar) => {
+                if (confirmar) {
+
+                    var form = $("#form-pedido")[0];
+                    var formData = new FormData(form);
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/Pedido/CrearPedido",
+                        data: formData,
+                        processData: false,  // tell jQuery not to process the data
+                        contentType: false,   // tell jQuery not to set contentType
+                        success: function (msg) {
+                            if (msg.status == 200) {
+                                swal({
+                                    title: "ÉXITO",
+                                    text: "Se creo tu pedido existosamente",
+                                    icon: "success",
+                                    button: "Aceptar",
+                                }).then((value) => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                swal({
+                                    title: "Error",
+                                    text: "Ocurrio un error, intentelo nuevamente",
+                                    icon: "warning",
+                                    button: "Aceptar",
+                                });
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+
+                }
+            });
+        }
+
+        //Validor form para producto
+        var validarFormPedido = () => {
+            jQuery.validator.setDefaults({
+                debug: true,
+                success: "valid",
+                highlight: function (element) {
+                    $(element).css('border-color', 'red');
+                },
+
+                // Called when the element is valid:
+                unhighlight: function (element) {
+
+                    $(element).css('background', '#ffffff');
+                    $(element).css('border-color', '#256d18');
+
+                }
+            });
+            $.validator.addMethod("valueNotEquals", function (value, element, arg) {
+                return arg !== value;
+            }, "Seleccione una opción.");
+            $.validator.addMethod("mayor0", function (value) {
+                var valido = false;
+                if (value.replace("min", "").replace("cm", "").replace("días", "").replace("KG", "").replace(",", "").trim() != "0") {
+                    valido = true;
+                }
+                return valido;
+
+            }, "El valor debe ser mayor a 0");
+            $("#form-pedido").validate({
+
+                rules: {
+                    Nombre: { required: true },
+                    Direccion: { required: true },
+                    IdDona: { mayor0: true },
+                    Cantidad: { min:1 },
+
+
+                },
+                messages: {
+                    Nombre: { required: 'Este campo es requerido' },
+                    Direccion: { required: "Este campo es requerido" },
+                    IdDona: { mayor0: "El valor debe ser mayor a 0" },
+                    Cantidad: { min: "La cantidad debe ser mayor a 0" }
+                  
+
+                }
+            });
+        }
+
+        var startMultiple = () => {
+            $(".UOM").select2({
+                
+                allowClear: true,
+                language: {
+                    noResults: function () {
+                        return 'No se encontraron resultados';
+                    },
+                }
+
+            });
+        }
+    </script>
+    }
+
+
+
+
