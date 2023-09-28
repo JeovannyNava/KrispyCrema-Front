@@ -28,7 +28,7 @@ namespace Sl1_Front.ServiceAPI
             var responseAPI = request.GetResponse();
             var reader = new StreamReader(responseAPI.GetResponseStream());
             string jsonResponse = reader.ReadToEnd();
-            var a = JsonConvert.DeserializeObject<string>(jsonResponse);
+            response = JsonConvert.DeserializeObject<ReponseAPI>(jsonResponse);
 
             return response;
         }   

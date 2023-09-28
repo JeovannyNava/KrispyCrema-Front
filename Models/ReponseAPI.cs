@@ -7,5 +7,7 @@ namespace Sl1_Front.Models
 {
     public class ReponseAPI
     {
+        public int Code { get; set; }
+        public string message { get; set; }
     }
 }
